@@ -6,6 +6,7 @@ import time
 import json
 import string
 import threading
+import codecs
 
 db_parameters = dict()
 main_conf = dict()
@@ -57,7 +58,7 @@ def readDBParameters(checkInterval=2):
             break
         if not main_conf['is_db_updating']:
             main_conf['is_db_updating'] = True
-            with open(main_conf['conf_path'] + main_conf['conf_name'], 'r') as f:
+            with codecs.open(main_conf['conf_path'] + main_conf['conf_name'], 'r', 'utf-8') as f:
                 db_parameters = json.load(f) 
             main_conf['is_db_updating'] = False
         time.sleep(checkInterval)
@@ -68,7 +69,7 @@ def updateDBParameters():
         pass
     try:
         main_conf['is_db_updating'] = True
-        with open(main_conf['conf_path'] + main_conf['conf_name'], 'w') as f:
+        with codecs.open(main_conf['conf_path'] + main_conf['conf_name'], 'w', 'utf-8') as f:
             json.dump(db_parameters, f, ensure_ascii=False) 
     except Exception as err:
         print(err)
@@ -78,7 +79,7 @@ def updateDBParameters():
 def loadWords(wordLen):    
     global main_conf
     words = []
-    with open(main_conf['word_path'] + 'words' + str(wordLen) + '.txt','r') as f:
+    with codecs.open(main_conf['word_path'] + 'words' + str(wordLen) + '.txt','r', 'utf-8') as f:
         for word in f:
             words.append(word.strip("\n\t "))
     return words
@@ -248,7 +249,7 @@ def outScreen(parName, delayAfter=2):
     fullScreenWin.clear()
     fullScreenWin.refresh()
     fullScreenWin.nodelay(True)
-    with open(main_conf['screen_path'] + db_parameters[parName], 'r') as fh:
+    with codecs.open(main_conf['screen_path'] + db_parameters[parName], 'r', 'utf-8') as fh:
         outTxtStr = fh.read()
     status = outHeader(outTxtStr, fullScreenWin)
     if delayAfter > 0:
@@ -307,7 +308,7 @@ def hackScreen():
     triesAst = '* ' * db_parameters['attempts']
     numTries = db_parameters['attempts']
 
-    with open(main_conf['screen_path'] + db_parameters['hackHeader'], 'r') as fh:
+    with codecs.open(main_conf['screen_path'] + db_parameters['hackHeader'], 'r', 'utf-8') as fh:
         outTxtStr = fh.read()
 
     if(outHeader(outTxtStr.format(numTries, triesAst), hackServWin)):
@@ -363,7 +364,7 @@ def hackScreen():
                 return
         f = False
         key = hackMainWin.getch()
-        if key == curses.KEY_LEFT or key == 260:
+        if key == curses.KEY_LEFT or key == 260 or key == ord('A') or key == ord('a'):
             f = True
             if x == 8:
                 x = 43
@@ -371,7 +372,7 @@ def hackScreen():
                 x = 19
             else:
                 x -= 1
-        if key == curses.KEY_RIGHT or key == 261:
+        if key == curses.KEY_RIGHT or key == 261 or key == ord('D') or key == ord('d'):
             f = True
             if x == 19:
                 x = 32
@@ -379,13 +380,13 @@ def hackScreen():
                 x = 8
             else:
                 x += 1
-        if key == curses.KEY_UP or key == 259:
+        if key == curses.KEY_UP or key == 259 or key == ord('W') or key == ord('w'):
             f = True
             if y == 0:
                 y = 16
             else:
                 y -= 1
-        if key == curses.KEY_DOWN or key == 258:
+        if key == curses.KEY_DOWN or key == 258 or key == ord('S') or key == ord('s'):
             f = True
             if y == 16:
                 y = 0
@@ -493,7 +494,6 @@ def hackScreen():
             strPos = getStrPos(x,y)
             (selWGroup, startWPos, endWPos) = checkWordPosition(strPos, fullStr)
             (selCGroup, startCPos, endCPos) = checkCheatPosition(strPos, fullStr)
-            # print(key, strPos, selWGroup, selCGroup)
             if startWPos >= 0:
                 wordFlag = True
                 cheatFlag = False
@@ -526,14 +526,15 @@ def readScreen(fName):
     x = 0
     y = 0
 
-    with open(main_conf['screen_path'] + db_parameters['mainHeader'], 'r') as fh:
+    with codecs.open(main_conf['screen_path'] + db_parameters['mainHeader'], 'r', 'utf-8') as fh:
         outTxtStr = fh.read()
 
     if(outHeader(outTxtStr, readServWin)):
         return
 
-    with open(fName, 'r') as fh:
+    with codecs.open(fName, 'r', 'utf-8') as fh: #!!!
         outTxtStr = fh.read()
+   
     outTxtLst = outTxtStr.split('\n')
     readTextPad = curses.newpad(int(len(outTxtLst)/20 + 1)*20, 80)
     for str in outTxtLst:
@@ -553,16 +554,16 @@ def readScreen(fName):
                 return
         f = False
         readServWin.move(0, 0)
-        kb = readServWin.getch()
-        if kb == curses.KEY_NPAGE or kb == 338:
+        key = readServWin.getch()
+        if key == curses.KEY_NPAGE or key == 338  or key == ord('S') or key == ord('s'):
             if rowPos < int(len(outTxtLst)/20)*20:
                 rowPos += 20
                 f = True
-        if kb == curses.KEY_PPAGE or kb == 339:
+        if key == curses.KEY_PPAGE or key == 339 or key == ord('W') or key == ord('w'):
             if rowPos > 0:
                 rowPos -= 20
                 f = True
-        if kb == curses.KEY_BACKSPACE or kb == 27:
+        if key == curses.KEY_BACKSPACE or key == 27:
             readServWin.clear()
             readServWin.refresh()
             menuScreen()
@@ -581,7 +582,7 @@ def menuScreen():
     x = 0
     y = 0
 
-    with open(main_conf['screen_path'] + db_parameters['menuHeader'], 'r') as fh:
+    with codecs.open(main_conf['screen_path'] + db_parameters['menuHeader'], 'r', 'utf-8') as fh:
         outTxtStr = fh.read()
 
     if(outHeader(outTxtStr, menuServWin)):
@@ -608,14 +609,14 @@ def menuScreen():
     while True:
         f = False
         key = menuMainWin.getch()
-        if key == curses.KEY_UP or key == 259:
+        if key == curses.KEY_UP or key == 259 or key == ord('W') or key == ord('w'):
             menuMainWin.addstr(y, x, menuSel[menuPos], curses.color_pair(1) | curses.A_BOLD)
             f = True
             if menuPos == 0:
                 menuPos = len(menuSel) - 1
             else:
                 menuPos -= 1
-        if key == curses.KEY_DOWN or key == 258:
+        if key == curses.KEY_DOWN or key == 258 or key == ord('S') or key == ord('s'):
             menuMainWin.addstr(y, x, menuSel[menuPos], curses.color_pair(1) | curses.A_BOLD)
             f = True
             if menuPos == len(menuSel) - 1:
@@ -628,8 +629,8 @@ def menuScreen():
             menuServWin.refresh()
             menuMainWin.clear()
             menuMainWin.refresh()
-            if db_parameters['textMenu'][menuSel[menuPos]] != "GPIO":
-                readScreen(main_conf['text_path'] + db_parameters['textMenu'][menuSel[menuPos]])
+            if db_parameters['textMenu'][menuSel[menuPos]]["type"] == "text":
+                readScreen(main_conf['text_path'] + db_parameters['textMenu'][menuSel[menuPos]]["name"])
         if f:
             y = int((21 - rows * 2) / 2) + 2*menuPos
             menuMainWin.addstr(y, x, menuSel[menuPos], curses.color_pair(1) | curses.A_REVERSE)
