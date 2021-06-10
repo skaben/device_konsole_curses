@@ -1,0 +1,9 @@
+{"deltaX": 2, "deltaY": 1, 
+"isPowerOn": true, "isLocked": false, "lockTimeOut": 30, "isHacked": true, 
+"wordLength": 8, "wordsPrinted": 16, "attempts": 4, 
+"startHeader": "startScreen.txt", "hackHeader": "hackScreen.txt", 
+"unPowerHeader": "powerScreen.txt", "lockHeader": "lockScreen.txt", 
+"mainHeader": "readScreen.txt", "menuHeader": "menuScreen.txt", 
+"textMenu": {"Водки лётчикам не давать": {"type": "text", "name": "f3Doc.txt"}, 
+"Сливное отверстие": {"type": "text", "name": "f3Doc1.txt"}, 
+"Показать картинку": {"type": "command", "name": "321"}}}
